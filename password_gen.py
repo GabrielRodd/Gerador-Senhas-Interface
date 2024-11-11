@@ -13,14 +13,15 @@ class PassGen:
              sg.Input(key='site', size=(20, 1))],
             [sg.Text('E-mail/Usuário', size=(11, 1), colors=('black')),
              sg.Input(key='usuario', size=(20, 1))],
-            [sg.Text('Primeiro Caracter', size=(11, 1), colors=('black')),
-             sg.Input(key='first', size=(20, 1))],
+            [sg.Text('First Caracter', size=(11, 1), colors=('black')),
+             sg.Input(key='first',size=(2, 1))],
             [sg.Text('Quantidade de caracteres', size=(20, 1), colors=('black')),
              sg.Combo(values=list(range(31)), key='total_chars', default_value=1, size=(3, 1))],
-            [sg.Output(size=(32, 5))],
-            [sg.Button('Gerar Senha')]
+            [sg.Output(key='-OUTPUT-', size=(32, 5))],
+            [sg.Button('Gerar Senha')],
+            [sg.Button('Limpar')]
         ]
-    
+
         # Declarar janela
         self.janela = sg.Window('Password Generator', layout1)
 
@@ -32,6 +33,9 @@ class PassGen:
             if evento == 'Gerar Senha':
                 nova_senha = self.gerar_senha(valores)
                 print(f'Senha gerada pelo sistema:\n{nova_senha}')
+                self.salvar_senha(nova_senha, valores)
+            if evento == 'Limpar':
+                self.limpar_campos()
 
     def gerar_senha(self, valores):
         letter_options = string.ascii_letters
@@ -43,12 +47,18 @@ class PassGen:
         new_pass = primeiro_carac + ''.join(chars)
         return new_pass
 
+    def limpar_campos(self):
+        self.janela['site'].update('')
+        self.janela['usuario'].update('')
+        self.janela['first'].update('')
+        self.janela['-OUTPUT-'].update('')
+
     def salvar_senha(self, nova_senha, valores):
         with open('senhas.txt', 'a', newline='') as arquivo:
             arquivo.write(f"site: {valores['site']}, usuario: {
-                          valores['usuario']}, nova senha {nova_senha} ")
+                          valores['usuario']}, nova senha: {nova_senha}\n")
 
-        print('Arquivo Salvo')
+        print('Senha salva no banco de dados')
 
 
 gen = PassGen()
