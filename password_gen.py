@@ -58,6 +58,8 @@ class PassGen:
 
     def criar_banco(self):
         with sqlite3.connect('senhas.db') as conexao:
+            
+            # cursor, que é o "ponteiro" que permite executar comandos SQL.
             sql = conexao.cursor()
 
             sql.execute('CREATE TABLE IF NOT EXISTS senhas(id INTEGER PRIMARY KEY AUTOINCREMENT, site TEXT, usuario TEXT, senha TEXT)')
