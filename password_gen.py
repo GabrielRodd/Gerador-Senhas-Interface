@@ -2,6 +2,8 @@
 import random  # Bibli. random gera valores aleatorios
 import string  # Bibli. string para gerar strings
 import PySimpleGUI as sg  # Bibli. de interface gráfica
+import sqlite3
+
 
 
 class PassGen:
@@ -26,6 +28,7 @@ class PassGen:
         self.janela = sg.Window('Password Generator', layout1)
 
     def Iniciar(self):
+        self.criar_banco()
         while True:
             evento, valores = self.janela.read()
             if evento == sg.WINDOW_CLOSED:
@@ -53,13 +56,29 @@ class PassGen:
         self.janela['first'].update('')
         self.janela['-OUTPUT-'].update('')
 
+    def criar_banco(self):
+        with sqlite3.connect('senhas.db') as conexao:
+            sql = conexao.cursor()
+
+            sql.execute('CREATE TABLE IF NOT EXISTS senhas(id INTEGER PRIMARY KEY AUTOINCREMENT, site TEXT, usuario TEXT, senha TEXT)')
+
+            conexao.commit()
+            
+
     def salvar_senha(self, nova_senha, valores):
-        with open('senhas.txt', 'a', newline='') as arquivo:
-            arquivo.write(f"site: {valores['site']}, usuario: {
-                          valores['usuario']}, nova senha: {nova_senha}\n")
+        conexao = sqlite3.connect('senhas.db')
+        sql = conexao.cursor()
+
+        sql.execute('INSERT INTO senhas(site,usuario,senha)VALUES(?, ?, ?)', (valores['site'],valores['usuario'], nova_senha))
+
+        conexao.commit()
+        conexao.close()
+ 
+        
 
         print('Senha salva no banco de dados')
 
 
-gen = PassGen()
-gen.Iniciar()
+if __name__ == '__main__':
+    gen = PassGen() 
+    gen.Iniciar()
